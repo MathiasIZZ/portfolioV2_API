@@ -26,6 +26,26 @@ const languagesSchema = schema({
     name: String
 });
 
+
+
+const projectsSchema = schema({
+    title: String,
+    index: Number,
+    description: String,
+    languages: [{
+        type: schema.ObjectId, ref: languagesSchema
+    }],
+    infos: {
+        type: {
+            author: ''
+        },
+        default: {
+            author: 'Alice ISAAZ'
+        }
+    }
+});
+
+/* MODELE EMBEDDED
 const projectsSchema = schema({
     title: String,
     index: Number,
@@ -41,8 +61,10 @@ const projectsSchema = schema({
             author: 'Alice ISAAZ'
         }
     }
-});
+});*/
 
+
+const Languages = mongoose.model('Languages', languagesSchema)
 const Projects = mongoose.model('projects', projectsSchema);
 
 
@@ -53,16 +75,20 @@ mongoose.connect('mongodb://izza:admin@localhost:27017/portfolio', {
     .then( (resolve) => {
         console.log("Connexion OK");
 
-        Projects.findOne({'languages._id': '601bc5de2f96100740b5c1c3'} )
+        const newLanguage = new Languages({
+            name: 'Angular'
+        })
+
+        /*newLanguage.save().then( nl => {
+
+            Projects.findOne({} )
                 .exec()
                 .then( (data) => {
-
-                    const languages = data.languages.id('601bc5de2f96100740b5c1c3');
-
-                    console.log({languages})
-
+                    data.languages.push(nl._id);
+                    data.save();
 
                 });
+        });*/
     })
     .catch( (err) => {
         console.log(err);
