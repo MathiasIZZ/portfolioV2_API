@@ -23,18 +23,16 @@ app.use(index);
 
 
 const languagesSchema = schema({
-    name: String
+    name: String,
+    photo: String,
+    projects: [{ type: schema.ObjectId, ref: 'projects'}]
 });
-
 
 
 const projectsSchema = schema({
     title: String,
     index: Number,
     description: String,
-    languages: [{
-        type: schema.ObjectId, ref: languagesSchema
-    }],
     infos: {
         type: {
             author: ''
@@ -43,7 +41,10 @@ const projectsSchema = schema({
             author: 'Alice ISAAZ'
         }
     }
-});
+},
+    {
+        timestamps: true
+    });
 
 /* MODELE EMBEDDED
 const projectsSchema = schema({
@@ -63,8 +64,43 @@ const projectsSchema = schema({
     }
 });*/
 
+projectsSchema.pre('validate', function(next) {
+    console.log('pre validate');
+    next();
+})
 
-const Languages = mongoose.model('Languages', languagesSchema)
+projectsSchema.post('validate', function (doc, next) {
+
+    return Projects.countDocuments().exec().then( (nombre) =>{
+        doc.index = nombre + 1;
+    })
+})
+
+projectsSchema.pre('save', function(next) {
+    console.log('pre save');
+    next();
+});
+
+projectsSchema.post('save', function () {
+    console.log('post save');
+});
+
+projectsSchema.statics.findByTitle =  function(title, cb) {
+   return Projects.find({title}, cb);
+};
+
+languagesSchema.statics.findByName = function(name, cb) {
+    return Languages.find({name}, cb);
+}
+
+projectsSchema.methods.displayClassy = function() {
+    return `${ this.index } : ${ this.title }`;
+}
+
+
+
+
+const Languages = mongoose.model('languages', languagesSchema)
 const Projects = mongoose.model('projects', projectsSchema);
 
 
@@ -72,27 +108,21 @@ mongoose.connect('mongodb://izza:admin@localhost:27017/portfolio', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then( (resolve) => {
+    .then( () => {
         console.log("Connexion OK");
 
-        const newLanguage = new Languages({
-            name: 'Angular'
-        })
+        Projects.findOneAndUpdate({title: 'Bambunor'}, {$set: { 'infos.author': 'Michel Pirres' }  })
+            .exec().then( (resolve) => console.log(resolve.infos.author));
 
-        /*newLanguage.save().then( nl => {
-
-            Projects.findOne({} )
-                .exec()
-                .then( (data) => {
-                    data.languages.push(nl._id);
-                    data.save();
-
-                });
-        });*/
     })
-    .catch( (err) => {
-        console.log(err);
-    })
+
+
+
+
+
+
+
+
 
         /*Projects.findOne({})
                 .exec()
