@@ -1,11 +1,10 @@
 const express = require('express')
 const router = express.Router();
-const Projects = require('../database/models/projects.model');
+const projects = require('./projects');
 
 
-router.get('/projects', (req, res) => {
+router.use('/projects', projects);
 
-    Projects.find({}).exec().then( data => res.json(data))
-})
+
 
 module.exports = router;

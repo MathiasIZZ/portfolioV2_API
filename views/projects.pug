@@ -1,0 +1,18 @@
+extends layout.pug
+
+block content
+    div.d-flex.flex-column.aling-items-center.justify-content-center.w-100
+        h1 Mes projets
+
+        form(method="post" action="/api/projects").d-flex.flex-column.card.w-50.aling-items-center.justify-content-center
+            div.card-body Création d'un projet
+            div.form-group
+                input(type="text" placeholder="title" name="title").form-control
+            div.form-group
+                input(type="text" placeholder="description" name="description").form-control
+            div.form-group
+                input(type="text" placeholder="autheur" name="author").form-control
+            button(type="submit").btn.btn-primary Enregistrer
+            p
+                | not a member
+                a(href="#") Sing Up now

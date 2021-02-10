@@ -3,11 +3,10 @@ const morgan = require('morgan');
 const path = require('path');
 const app = express();
 
-
+const routing = require('./routes')
 
 const port = process.env.PORT || 3000;
-const api = require('./routes/api')
-const index = require('./routes/index');
+
 
 require('./database'); // LIEN VERS LA BDD
 
@@ -19,8 +18,10 @@ app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/api', api);
-app.use(index);
+
+
+
+app.use(routing);
 
 
 
